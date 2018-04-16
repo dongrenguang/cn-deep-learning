@@ -11,7 +11,7 @@
 # 请运行以下单元，以下载 [CIFAR-10 数据集（Python版）](https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz)。
 # 
 
-# In[2]:
+# In[5]:
 
 
 """
@@ -76,7 +76,7 @@ tests.test_folder_path(cifar10_dataset_folder_path)
 # 问问你自己：“可能的标签有哪些？”、“图片数据的值范围是多少？”、“标签是按顺序排列，还是随机排列的？”。思考类似的问题，有助于你预处理数据，并使预测结果更准确。
 # 
 
-# In[7]:
+# In[6]:
 
 
 get_ipython().magic('matplotlib inline')
@@ -98,7 +98,7 @@ helper.display_stats(cifar10_dataset_folder_path, batch_id, sample_id)
 # 在下面的单元中，实现 `normalize` 函数，传入图片数据 `x`，并返回标准化 Numpy 数组。值应该在 0 到 1 的范围内（含 0 和 1）。返回对象应该和 `x` 的形状一样。
 # 
 
-# In[30]:
+# In[7]:
 
 
 def normalize(x):
@@ -123,7 +123,7 @@ tests.test_normalize(normalize)
 # 
 # 提示：不要重复发明轮子。
 
-# In[9]:
+# In[8]:
 
 
 def one_hot_encode(x):
@@ -154,7 +154,7 @@ tests.test_one_hot_encode(one_hot_encode)
 # 运行下方的代码单元，将预处理所有 CIFAR-10 数据，并保存到文件中。下面的代码还使用了 10% 的训练数据，用来验证。
 # 
 
-# In[10]:
+# In[9]:
 
 
 """
@@ -169,7 +169,7 @@ helper.preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_
 # 这是你的第一个检查点。如果你什么时候决定再回到该记事本，或需要重新启动该记事本，你可以从这里开始。预处理的数据已保存到本地。
 # 
 
-# In[3]:
+# In[10]:
 
 
 """
@@ -214,7 +214,7 @@ valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode=
 # 
 # 注意：TensorFlow 中的 `None` 表示形状可以是动态大小。
 
-# In[4]:
+# In[11]:
 
 
 import tensorflow as tf
@@ -272,7 +272,7 @@ tests.test_nn_keep_prob_inputs(neural_net_keep_prob_input)
 # **注意**：对于**此层**，**请勿使用** [TensorFlow Layers](https://www.tensorflow.org/api_docs/python/tf/layers) 或 [TensorFlow Layers (contrib)](https://www.tensorflow.org/api_guides/python/contrib.layers)，但是仍然可以使用 TensorFlow 的 [Neural Network](https://www.tensorflow.org/api_docs/python/tf/nn) 包。对于所有**其他层**，你依然可以使用快捷方法。
 # 
 
-# In[81]:
+# In[12]:
 
 
 def conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ksize, pool_strides):
@@ -313,7 +313,7 @@ tests.test_con_pool(conv2d_maxpool)
 # 实现 `flatten` 函数，将 `x_tensor` 的维度从四维张量（4-D tensor）变成二维张量。输出应该是形状（*部分大小（Batch Size）*，*扁平化图片大小（Flattened Image Size）*）。快捷方法：对于此层，你可以使用 [TensorFlow Layers](https://www.tensorflow.org/api_docs/python/tf/layers) 或 [TensorFlow Layers (contrib)](https://www.tensorflow.org/api_guides/python/contrib.layers) 包中的类。如果你想要更大挑战，可以仅使用其他 TensorFlow 程序包。
 # 
 
-# In[82]:
+# In[13]:
 
 
 def flatten(x_tensor):
@@ -338,7 +338,7 @@ tests.test_flatten(flatten)
 # 
 # 实现 `fully_conn` 函数，以向 `x_tensor` 应用全连接层，形状为（*部分大小（Batch Size）*，*num_outputs*）。快捷方法：对于此层，你可以使用 [TensorFlow Layers](https://www.tensorflow.org/api_docs/python/tf/layers) 或 [TensorFlow Layers (contrib)](https://www.tensorflow.org/api_guides/python/contrib.layers) 包中的类。如果你想要更大挑战，可以仅使用其他 TensorFlow 程序包。
 
-# In[83]:
+# In[15]:
 
 
 def fully_conn(x_tensor, num_outputs):
@@ -351,7 +351,7 @@ def fully_conn(x_tensor, num_outputs):
     # TODO: Implement Function
     weights = tf.Variable(tf.random_normal([x_tensor.get_shape().as_list()[1], num_outputs], stddev=0.1))
     biases = tf.Variable(tf.random_normal([num_outputs], stddev=0.1))
-    return tf.add(tf.matmul(x_tensor, weights), biases)
+    return tf.nn.relu(tf.add(tf.matmul(x_tensor, weights), biases))
 
 
 """
@@ -366,7 +366,7 @@ tests.test_fully_conn(fully_conn)
 # 
 # **注意**：该层级不应应用 Activation、softmax 或交叉熵（cross entropy）。
 
-# In[84]:
+# In[16]:
 
 
 def output(x_tensor, num_outputs):
@@ -399,7 +399,7 @@ tests.test_output(output)
 # * 返回输出
 # * 使用 `keep_prob` 向模型中的一个或多个层应用 [TensorFlow 的 Dropout](https://www.tensorflow.org/api_docs/python/tf/nn/dropout)
 
-# In[100]:
+# In[17]:
 
 
 def conv_net(x, keep_prob):
@@ -429,7 +429,6 @@ def conv_net(x, keep_prob):
     # Function Definition from Above:
     #   fully_conn(x_tensor, num_outputs)
     fc = fully_conn(flt, 512)
-    fc = tf.nn.relu(fc)
     fc = tf.nn.dropout(fc, keep_prob)
     
     
